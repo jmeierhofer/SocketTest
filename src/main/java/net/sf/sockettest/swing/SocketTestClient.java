@@ -425,7 +425,7 @@ public class SocketTestClient extends JPanel implements NetService {
 
     public synchronized void disconnect() {
         try {
-            socketClient.setDesonnected(true);
+            socketClient.setDisonnected(true);
             socket.close();
         } catch (Exception e) {
             System.err.println("Error closing client : " + e);

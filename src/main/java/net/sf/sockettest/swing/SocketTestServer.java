@@ -405,7 +405,7 @@ public class SocketTestServer extends JPanel implements NetService {
     //disconnect a client
     public synchronized void disconnect() {
         try {
-            socketServer.setDesonnected(true);
+            socketServer.setDisonnected(true);
         } catch (Exception e) {}
     }
     

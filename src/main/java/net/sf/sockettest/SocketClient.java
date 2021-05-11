@@ -1,7 +1,10 @@
 package net.sf.sockettest;
 
-import java.net.*;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.Socket;
+
 import net.sf.sockettest.swing.SocketTestClient;
 /**
  *
@@ -13,17 +16,17 @@ public class SocketClient extends Thread {
     private Socket socket=null;
     private SocketTestClient parent;
     private BufferedInputStream in;
-    private boolean desonnected=false;
+    private boolean disonnected=false;
     
-    public synchronized void setDesonnected(boolean cr) {
-        desonnected=cr;
+    public synchronized void setDisonnected(boolean cr) {
+        disonnected=cr;
     }
     
     private SocketClient(SocketTestClient parent, Socket s) {
         super("SocketClient");
         this.parent = parent;
         socket=s;
-        setDesonnected(false);
+        setDisonnected(false);
         start();
     }
     
@@ -44,6 +47,7 @@ public class SocketClient extends Thread {
         return socketClient;
     }
     
+    @Override
     public void run() {
         InputStream is = null;
         try {
@@ -59,35 +63,34 @@ public class SocketClient extends Thread {
             parent.disconnect();
             return;
         }
-        
-        while(!desonnected) {
+
+        while (!disonnected) {
+            String rec = null;
             try {
-                String got = readInputStream(in); //in.readLine();
-                if(got==null) {
-                    //parent.error("Connection closed by client");
+                rec = readInputStream(in);
+                if (rec == null) {
                     parent.disconnect();
                     break;
                 }
-                //got = got.replaceAll("\n","<LF>");
-                //got = got.replaceAll("\r","<CR>");
-                //parent.append("R: "+got);
-                parent.appendnoNewLine(got);
-            } catch(IOException e) {
-                if(!desonnected) {
-                    parent.error(e.getMessage(),"Connection lost");
+                parent.append("R: " + rec);
+
+            } catch (IOException e) {
+                if (!disonnected) {
+                    parent.error(e.getMessage(), "Connection lost");
                     parent.disconnect();
                 }
                 break;
             }
-        }//end of while
-        try	{
+        }
+        try {
             is.close();
             in.close();
-            //socket.close();
-        } catch (Exception err) {}
-        socket=null;
-    }//end of run
-    
+            // socket.close();
+        } catch (Exception err) {
+        }
+        socket = null;
+    }
+
     private static String readInputStream(BufferedInputStream _in) throws IOException {
         String data = "";
         int s = _in.read();
