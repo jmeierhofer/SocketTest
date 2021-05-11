@@ -9,3 +9,5 @@ repositories {
 
 dependencies {
 }
+
+sourceCompatibility = JavaVersion.VERSION_1_8
