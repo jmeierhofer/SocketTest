@@ -1,20 +1,47 @@
 package net.sf.sockettest.swing;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.security.SecureRandom;
 
-import java.net.*;
-import java.io.*;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EtchedBorder;
 
-import javax.net.*;
-import javax.net.ssl.*;
-
-import net.sf.sockettest.*;
+import net.sf.sockettest.MyTrustManager;
+import net.sf.sockettest.NetService;
+import net.sf.sockettest.SocketClient;
+import net.sf.sockettest.Util;
+import net.sf.sockettest.Version;
 
 /**
  * @author Akshathkumar Shetty
@@ -36,7 +63,7 @@ public class SocketTestClient extends JPanel implements NetService{
 
     private JLabel ipLabel = new JLabel("IP Address");
     private JLabel portLabel = new JLabel("Port");
-    private JLabel logoLabel = new JLabel("SocketTest v 3.0", logo,
+    private JLabel logoLabel = new JLabel(Version.VERSION_LONG, logo,
             JLabel.CENTER);
     private JTextField ipField = new JTextField("127.0.0.1", 20);
     private JTextField portField = new JTextField("21", 10);
@@ -87,6 +114,7 @@ public class SocketTestClient extends JPanel implements NetService{
         gbc.gridwidth = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         ActionListener ipListener = new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 portField.requestFocus();
             }
@@ -107,6 +135,7 @@ public class SocketTestClient extends JPanel implements NetService{
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         ActionListener connectListener = new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 connect();
             }
@@ -122,6 +151,7 @@ public class SocketTestClient extends JPanel implements NetService{
         portButton.setMnemonic('P');
         portButton.setToolTipText("View Standard Ports");
         ActionListener portButtonListener = new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 PortDialog dia = new PortDialog(parent, PortDialog.TCP);
                 dia.show();
@@ -149,6 +179,7 @@ public class SocketTestClient extends JPanel implements NetService{
         secureButton.setToolTipText("Set Has Secure");
         secureButton.addItemListener(
                 new ItemListener() {
+                    @Override
                     public void itemStateChanged(ItemEvent e) {
                         isSecure = !isSecure;
                     }
@@ -195,6 +226,7 @@ public class SocketTestClient extends JPanel implements NetService{
         sendButton.setEnabled(false);
         sendButton.setToolTipText("Send text to host");
         ActionListener sendListener = new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 String msg = sendField.getText();
                 if (!msg.equals(""))
@@ -236,6 +268,7 @@ public class SocketTestClient extends JPanel implements NetService{
         saveButton.setToolTipText("Save conversation with host to a file");
         saveButton.setMnemonic('S');
         ActionListener saveListener = new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 String text = messagesField.getText();
                 if (text.equals("")) {
@@ -265,6 +298,7 @@ public class SocketTestClient extends JPanel implements NetService{
         clearButton.setToolTipText("Clear conversation with host");
         clearButton.setMnemonic('C');
         ActionListener clearListener = new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 messagesField.setText("");
             }
@@ -466,6 +500,7 @@ public class SocketTestClient extends JPanel implements NetService{
         repaint();
     }
 
+    @Override
     public void setUpConfiguration(String ip, String port) {
         ipField.setText(ip);
         portField.setText(port);

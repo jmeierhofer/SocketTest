@@ -1,12 +1,22 @@
 package net.sf.sockettest.swing;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.io.IOException;
-import net.sf.sockettest.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import net.sf.sockettest.Util;
+import net.sf.sockettest.Version;
 
 /**
  * About Tab
@@ -30,7 +40,7 @@ public class About extends JPanel /*JFrame*/ {
     String html="<html><font face=\"verdana\" size=\"2\">";
     
     private JLabel versionText = new JLabel(html+"Version",ball,JLabel.LEFT);
-    private JLabel version = new JLabel(html+": 3.0.0", JLabel.LEFT);
+    private JLabel version = new JLabel(html+": " + Version.VERSION_SHORT, JLabel.LEFT);
     
     private JLabel licenceText = new JLabel(html+"Licence",ball,JLabel.LEFT);
     private JLabel licence = new JLabel(html+": GNU Lesser General Public License", JLabel.LEFT);
@@ -139,7 +149,7 @@ public class About extends JPanel /*JFrame*/ {
         centerPanel = new JPanel();
         readme.setText("Loading... readme");
         try {
-            String cont = Util.readFile("readme.txt",(Object)About.this);
+            String cont = Util.readFile("readme.txt",About.this);
             readme.setText(cont);
         } catch (IOException e){
             System.err.println("Error reading readme.txt "+e);

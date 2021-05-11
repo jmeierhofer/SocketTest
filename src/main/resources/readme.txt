@@ -1,5 +1,5 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Product	: SocketTest v 3.0
+Product	: SocketTest
 Licence	: GNU Lesser General Public License
 Author	: Akshathkumar Shetty
 Url	: http://sockettest.sourceforge.net/

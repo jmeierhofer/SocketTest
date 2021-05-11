@@ -11,3 +11,13 @@ dependencies {
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
+
+jar {
+    manifest {
+        attributes "Main-Class": "net.sf.sockettest.SocketTest"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

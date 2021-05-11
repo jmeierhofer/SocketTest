@@ -1,4 +1,4 @@
-SocketTest v3.0.1
+SocketTest
 ------------------
 
 A java tool for socket testing. It can create both TCP and UDP client or server. It can be used to test any server or client that uses TCP or UDP protocol to communicate.
