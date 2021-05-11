@@ -1,10 +1,14 @@
 package net.sf.sockettest;
 
-import javax.net.ssl.*;
-import java.security.cert.*;
-import java.awt.*;
-import javax.swing.*;
-import java.security.*;
+import java.awt.Component;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import javax.swing.JOptionPane;
 
 /**
  * Custom MyTrustManager
@@ -21,14 +25,10 @@ public class MyTrustManager implements X509TrustManager {
 	public MyTrustManager(Component parentComponent) throws Exception {
 		this.parentComponent = parentComponent;
 
-		TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509", "SunJSSE");
-		
-		
-		KeyStore ks = null;
-		tmf.init((KeyStore)null);
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509", "SunJSSE");
+        tmf.init((KeyStore) null);
 
 		TrustManager tms [] = tmf.getTrustManagers();
-
 
 		/*
           * Iterate over the returned trustmanagers, look
@@ -53,7 +53,8 @@ public class MyTrustManager implements X509TrustManager {
      /*
       * Delegate to the default trust manager.
       */
-     public void checkClientTrusted(X509Certificate[] chain, String authType)
+     @Override
+    public void checkClientTrusted(X509Certificate[] chain, String authType)
                  throws CertificateException {
 		 try {
              sunJSSEX509TrustManager.checkClientTrusted(chain, authType);
@@ -66,7 +67,8 @@ public class MyTrustManager implements X509TrustManager {
      /*
       * Delegate to the default trust manager.
       */
-     public void checkServerTrusted(X509Certificate[] chain, String authType)
+     @Override
+    public void checkServerTrusted(X509Certificate[] chain, String authType)
                  throws CertificateException {
 		 try {
              sunJSSEX509TrustManager.checkServerTrusted(chain, authType);
@@ -99,7 +101,8 @@ public class MyTrustManager implements X509TrustManager {
      /*
       * Merely pass this through.
       */
-     public X509Certificate[] getAcceptedIssuers() {
+     @Override
+    public X509Certificate[] getAcceptedIssuers() {
          // return sunJSSEX509TrustManager.getAcceptedIssuers();
 		 if(sunJSSEX509TrustManager==null) return null;
 

@@ -46,7 +46,9 @@ import net.sf.sockettest.Version;
 /**
  * @author Akshathkumar Shetty
  */
-public class SocketTestClient extends JPanel implements NetService{
+public class SocketTestClient extends JPanel implements NetService {
+    
+    private static final long serialVersionUID = 1L;
 
     private final String NEW_LINE = "\r\n";
     private ClassLoader cl = getClass().getClassLoader();
@@ -154,7 +156,7 @@ public class SocketTestClient extends JPanel implements NetService{
             @Override
             public void actionPerformed(ActionEvent e) {
                 PortDialog dia = new PortDialog(parent, PortDialog.TCP);
-                dia.show();
+                dia.setVisible(true);
             }
         };
         portButton.addActionListener(portButtonListener);

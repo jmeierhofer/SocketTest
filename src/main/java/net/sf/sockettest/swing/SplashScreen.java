@@ -16,6 +16,8 @@ import net.sf.sockettest.Version;
  * @author Akshathkumar Shetty
  */
 public class SplashScreen extends JWindow {
+    
+    private static final long serialVersionUID = 1L;
 
     protected ImageIcon logo;
     protected JLabel productName;

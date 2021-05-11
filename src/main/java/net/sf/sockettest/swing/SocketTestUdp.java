@@ -37,7 +37,10 @@ import net.sf.sockettest.Version;
 /**
  * @author Akshathkumar Shetty
  */
-public class SocketTestUdp extends JPanel implements NetService/*JFrame*/ {
+public class SocketTestUdp extends JPanel implements NetService {
+    
+    private static final long serialVersionUID = 1L;
+    
     private final String NEW_LINE = "\r\n";
     private ClassLoader cl = getClass().getClassLoader();
     public ImageIcon logo = new ImageIcon(
@@ -79,7 +82,6 @@ public class SocketTestUdp extends JPanel implements NetService/*JFrame*/ {
     private GridBagConstraints gbc = new GridBagConstraints();
 
     private DatagramSocket server, client;
-    private DatagramPacket packet;
     private UdpServer udpServer;
     private DatagramPacket pack;
     private byte buffer[];
@@ -150,7 +152,7 @@ public class SocketTestUdp extends JPanel implements NetService/*JFrame*/ {
             @Override
             public void actionPerformed(ActionEvent e) {
                 PortDialog dia = new PortDialog(parent, PortDialog.UDP);
-                dia.show();
+                dia.setVisible(true);
             }
         };
         portButton1.addActionListener(portButtonListener);

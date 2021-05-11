@@ -1,17 +1,23 @@
 package net.sf.sockettest.swing;
 
-import javax.swing.*;
-import javax.swing.table.*;
-import java.awt.*;
-import java.io.IOException;
+import java.awt.Container;
+
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
 import net.sf.sockettest.PortModel;
-import net.sf.sockettest.*;
+import net.sf.sockettest.Util;
 
 /**
  *
  * @author Akshathkumar Shetty
  */
 public class PortDialog extends JDialog {
+    
+    private static final long serialVersionUID = 1L;
+    
     public static final int UDP = 1;
     public static final int TCP = 2;
     private PortModel model;

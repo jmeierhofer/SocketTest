@@ -1,7 +1,8 @@
 package net.sf.sockettest;
 
-import java.net.*;
-import java.io.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+
 import net.sf.sockettest.swing.SocketTestUdp;
 /**
  *
@@ -86,6 +87,7 @@ public class UdpServer extends Thread {
         return udpServer2;
     }
     
+    @Override
     public void run() {
         DatagramPacket pack = new DatagramPacket(buffer,buffer.length);
         while(!stop) {

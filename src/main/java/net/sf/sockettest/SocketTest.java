@@ -20,9 +20,13 @@ import net.sf.sockettest.swing.SplashScreen;
  * @author Akshathkumar Shetty
  */
 public class SocketTest extends JFrame {
+    
+    private static final long serialVersionUID = 1L;
+    
     private static final String CLIENT = "c";
     private static final String SERVER = "s";
     private static final String UDP = "u";
+    
     private ClassLoader cl = getClass().getClassLoader();
     public ImageIcon logo = new ImageIcon(cl.getResource("icons/logo.gif"));
     public ImageIcon ball = new ImageIcon(cl.getResource("icons/ball.gif"));
@@ -80,7 +84,7 @@ public class SocketTest extends JFrame {
 
         SocketTest st = new SocketTest();
         st.setTitle(Version.VERSION_LONG);
-        st.setSize(600, 500);
+        st.setSize(800, 600);
         Util.centerWindow(st);
         st.setDefaultCloseOperation(EXIT_ON_CLOSE);
         st.setIconImage(st.logo.getImage());

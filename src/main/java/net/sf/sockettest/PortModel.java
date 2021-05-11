@@ -1,9 +1,11 @@
 package net.sf.sockettest;
 
-import java.util.StringTokenizer;
-import javax.swing.table.*;
-import javax.swing.event.*;
 import java.io.IOException;
+import java.util.StringTokenizer;
+
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
 
 
 /**
@@ -11,6 +13,9 @@ import java.io.IOException;
  * @author Akshathkumar Shetty
  */
 public class PortModel extends AbstractTableModel {
+    
+    private static final long serialVersionUID = 1L;
+    
     private String[][] data;
     private StringTokenizer st1,st2;
     private String port=null;
@@ -46,6 +51,7 @@ public class PortModel extends AbstractTableModel {
     
     // Prints data when table changes:
     class TML implements TableModelListener {
+        @Override
         public void tableChanged(TableModelEvent e) {
             int row = e.getFirstRow();
             System.out.println("Row changed : "+row);
@@ -53,16 +59,21 @@ public class PortModel extends AbstractTableModel {
         }
     }
     
+    @Override
     public int getColumnCount() { return data[0].length; }
+    @Override
     public int getRowCount() { return data.length; }
+    @Override
     public Object getValueAt(int row, int col) {
         return data[row][col];
     }
     
+    @Override
     public boolean isCellEditable(int row, int col) {
         return false;
     }
     
+    @Override
     public String getColumnName(int column) {
         return colName[column];
     }
