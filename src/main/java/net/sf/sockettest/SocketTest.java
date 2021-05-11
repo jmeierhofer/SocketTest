@@ -1,9 +1,14 @@
 package net.sf.sockettest;
 
-import java.awt.*;
+import java.awt.Container;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
 
 import net.sf.sockettest.swing.About;
 import net.sf.sockettest.swing.SocketTestClient;
@@ -41,7 +46,7 @@ public class SocketTest extends JFrame {
         services.put(SERVER, server);
         services.put(UDP, udp);
 
-        tabbedPane.addTab("Client", ball, (Component) client, "Test any server");
+        tabbedPane.addTab("Client", ball, client, "Test any server");
         tabbedPane.addTab("Server", ball, server, "Test any client");
         tabbedPane.addTab("Udp", ball, udp, "Test any UDP Client or Server");
         tabbedPane.addTab("About", ball, about, "About SocketTest");
