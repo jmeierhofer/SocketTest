@@ -1,14 +1,9 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Product	: SocketTest
-Licence	: GNU Lesser General Public License
-Author	: Akshathkumar Shetty
-Url	: http://sockettest.sourceforge.net/
-
 A java tool for socket testing. It can create both TCP and UDP client or 
 server. It can be used to test any server or client that uses TCP or UDP 
 protocol to communicate. 
 
-System Requirement: JDK 1.3 or above
+System Requirement: JDK 1.8 or above
 
 
 Other Libraries/Tools Used

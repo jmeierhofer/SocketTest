@@ -1,6 +1,10 @@
 SocketTest
 ------------------
 
+Modified version from Akshathkumar Shetty's SocketTest, which can be found here: https://github.com/akshath/SocketTest
+
+# Original README
+
 A java tool for socket testing. It can create both TCP and UDP client or server. It can be used to test any server or client that uses TCP or UDP protocol to communicate.
 
 Licence: GNU Lesser General Public License

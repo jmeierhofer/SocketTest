@@ -45,8 +45,11 @@ public class About extends JPanel /*JFrame*/ {
     private JLabel licenceText = new JLabel(html+"Licence",ball,JLabel.LEFT);
     private JLabel licence = new JLabel(html+": GNU Lesser General Public License", JLabel.LEFT);
     
-    private JLabel authorText = new JLabel(html+"Author",ball,JLabel.LEFT);
-    private JLabel author = new JLabel(html+": Akshathkumar Shetty", JLabel.LEFT);
+    private JLabel origAuthorText = new JLabel(html+"Author 1",ball,JLabel.LEFT);
+    private JLabel origAuthor = new JLabel(html+": Akshathkumar Shetty", JLabel.LEFT);
+    
+    private JLabel authorText = new JLabel(html+"Author 2",ball,JLabel.LEFT);
+    private JLabel author = new JLabel(html+": J. Meierhofer", JLabel.LEFT);
     
     private JLabel copyrightText = new JLabel(html+"Copyright &copy; 2003-2008 Akshathkumar Shetty",ball,JLabel.LEFT);
     
@@ -103,6 +106,17 @@ public class About extends JPanel /*JFrame*/ {
         gbc.gridy = 3;
         gbc.gridx = 0;
         gbc.weightx = 0.0;
+        topPanel.add(origAuthorText, gbc);
+        gbc.gridx = 1;
+        topPanel.add(origAuthor, gbc);
+        gbc.gridx = 2;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        topPanel.add(Box.createHorizontalGlue(), gbc);
+        
+        gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.weightx = 0.0;
         topPanel.add(authorText, gbc);
         gbc.gridx = 1;
         topPanel.add(author, gbc);
@@ -111,7 +125,7 @@ public class About extends JPanel /*JFrame*/ {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         topPanel.add(Box.createHorizontalGlue(), gbc);
         
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridx = 0;
         gbc.weightx = 0.0;
         topPanel.add(websiteText, gbc);
@@ -122,7 +136,7 @@ public class About extends JPanel /*JFrame*/ {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         topPanel.add(Box.createHorizontalGlue(), gbc);
         
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.gridx = 0;
         gbc.weightx = 0.0;
         gbc.gridwidth = 2;
@@ -133,7 +147,7 @@ public class About extends JPanel /*JFrame*/ {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         topPanel.add(Box.createHorizontalGlue(), gbc);
         
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.gridx = 0;
         gbc.weightx = 0.0;
         gbc.gridwidth = 1;
