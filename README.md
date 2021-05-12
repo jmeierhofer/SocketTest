@@ -5,7 +5,7 @@ Modified version from Akshathkumar Shetty's SocketTest, which can be found here:
 
 It has the following features compared to the original SocketTest v 3.0.1:
  * The original Ant project got converted to a Gradle project. The project can be imported to e.g. Eclipse via the Buildship plugin.
- * Print every received text from the connection in a new line and prefix it with `R:&nbsp;`, like it is done for every sent text with `S:&nbsp;`.
+ * Print every received text from the connection in a new line and prefix it with `R:`, like it is done for every sent text with `S:`.
  * Allow the user to select a charset like ASCII, UTF-8 or UTF-16 for converting the entered text to raw bytes and back.
 
 ## Build JAR
