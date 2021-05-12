@@ -12,7 +12,7 @@ It has the following features compared to the original SocketTest v 3.0.1:
 Open a console from your SocketTest project folder and enter:
 
 ```console
-./gradlew build
+gradlew build
 ```
 
 You can find the generated JAR file within the following folder:
