@@ -1,59 +1,64 @@
 package net.sf.sockettest;
 
-import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
 
+import net.sf.sockettest.swing.Encoding;
 import net.sf.sockettest.swing.SocketTestClient;
 /**
  *
  * @author Akshathkumar Shetty
  */
 public class SocketClient extends Thread {
-    
-    private static SocketClient socketClient=null;
-    private Socket socket=null;
+
+    private static SocketClient socketClient = null;
+    private Socket socket = null;
     private SocketTestClient parent;
-    private BufferedInputStream in;
-    private boolean disonnected=false;
-    
+    private BufferedReader reader;
+    private boolean disonnected = false;
+    private final Encoding selectedEncoding;
+
     public synchronized void setDisonnected(boolean cr) {
-        disonnected=cr;
+        disonnected = cr;
     }
-    
-    private SocketClient(SocketTestClient parent, Socket s) {
+
+    private SocketClient(SocketTestClient parent, Socket s, Encoding selectedEncoding) {
         super("SocketClient");
         this.parent = parent;
-        socket=s;
+        this.socket = s;
+        this.selectedEncoding = selectedEncoding;
         setDisonnected(false);
         start();
     }
-    
-    public static synchronized SocketClient handle(SocketTestClient parent, Socket s) {
-        if(socketClient==null)
-            socketClient=new SocketClient(parent, s);
+
+    public static synchronized SocketClient handle(SocketTestClient parent, Socket s, Encoding selectedEncoding) {
+        if (socketClient == null)
+            socketClient = new SocketClient(parent, s, selectedEncoding);
         else {
-            if(socketClient.socket!=null) {
-                try	{
+            if (socketClient.socket != null) {
+                try {
                     socketClient.socket.close();
-                } catch (Exception e)	{
+                } catch (Exception e) {
                     parent.error(e.getMessage());
                 }
             }
-            socketClient.socket=null;
-            socketClient=new SocketClient(parent,s);
+            socketClient.socket = null;
+            socketClient = new SocketClient(parent, s, selectedEncoding);
         }
         return socketClient;
     }
-    
+
     @Override
     public void run() {
-        InputStream is = null;
         try {
-            is = socket.getInputStream();
-            in = new BufferedInputStream(is);
+            InputStream is = socket.getInputStream();
+            this.reader = new BufferedReader(new InputStreamReader(is, selectedEncoding.getCharset()));
+            
         } catch(IOException e) {
+            e.printStackTrace();
             try {
                 socket.close();
             } catch(IOException e2) {
@@ -67,14 +72,20 @@ public class SocketClient extends Thread {
         while (!disonnected) {
             String rec = null;
             try {
-                rec = readInputStream(in);
+                rec = read();
                 if (rec == null) {
-                    parent.disconnect();
-                    break;
+                    if (!reader.ready()) {
+                        parent.disconnect();
+                        break;
+                    } else {
+                        sleep(200);
+                        continue;
+                    }
                 }
                 parent.append("R: " + rec);
 
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
                 if (!disonnected) {
                     parent.error(e.getMessage(), "Connection lost");
                     parent.disconnect();
@@ -83,28 +94,26 @@ public class SocketClient extends Thread {
             }
         }
         try {
-            is.close();
-            in.close();
-            // socket.close();
+            reader.close();
         } catch (Exception err) {
         }
         socket = null;
     }
 
-    private static String readInputStream(BufferedInputStream _in) throws IOException {
-        String data = "";
-        int s = _in.read();
-        if(s==-1)
-            return null;
-        data += ""+(char)s;
-        int len = _in.available();
-        System.out.println("Len got : "+len);
-        if(len > 0) {
-            byte[] byteData = new byte[len];
-            _in.read(byteData);
-            data += new String(byteData);
-        }
-        return data;
+    public String read() throws IOException {
+        StringBuilder result = new StringBuilder();
+        
+        do {
+            int charVal = reader.read();
+            if (charVal == -1) {
+                return null;
+            }
+            
+            char z = (char) charVal;
+            result.append(z);
+        } while (reader.ready());
+
+        System.out.println("Received: " + result);
+        return result.toString();
     }
-    
 }

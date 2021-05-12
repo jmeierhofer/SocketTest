@@ -52,7 +52,7 @@ public class About extends JPanel {
     private JLabel origAuthor = new JLabel(html+": Akshathkumar Shetty", JLabel.LEFT);
     
     private JLabel authorText = new JLabel(html+"Author 2",ball,JLabel.LEFT);
-    private JLabel author = new JLabel(html+": J. Meierhofer", JLabel.LEFT);
+    private JLabel author = new JLabel(html+": Jochen Meierhofer", JLabel.LEFT);
     
     private JLabel copyrightText = new JLabel(html+"Copyright &copy; 2003-2008 Akshathkumar Shetty",ball,JLabel.LEFT);
     
@@ -185,5 +185,4 @@ public class About extends JPanel {
         cp.add(centerPanel,BorderLayout.CENTER);
         setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
     }
-    
 }

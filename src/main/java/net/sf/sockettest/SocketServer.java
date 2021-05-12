@@ -1,11 +1,13 @@
 package net.sf.sockettest;
 
-import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import net.sf.sockettest.swing.Encoding;
 import net.sf.sockettest.swing.SocketTestServer;
 
 /**
@@ -18,9 +20,10 @@ public class SocketServer extends Thread {
     private Socket socket = null;
     private ServerSocket server = null;
     private SocketTestServer parent;
-    private BufferedInputStream in;
+    private BufferedReader reader;
     private boolean disonnected=false;
     private boolean stop = false;
+    private final Encoding selectedEncoding;
     
     public synchronized void setDisonnected(boolean cr) {
         if (socket != null && cr == true) {
@@ -34,49 +37,49 @@ public class SocketServer extends Thread {
     }
 
     public synchronized void setStop(boolean cr) {
-        stop=cr;
-        if(server!=null && cr==true) {
-            try	{
+        stop = cr;
+        if (server != null && cr == true) {
+            try {
                 server.close();
             } catch (Exception e) {
-                System.err.println("Error closing server : setStop : "+e);
+                System.err.println("Error closing server : setStop : " + e);
             }
         }
     }
-    
-    private SocketServer(SocketTestServer parent, ServerSocket s) {
+
+    private SocketServer(SocketTestServer parent, ServerSocket s, Encoding selectedEncoding) {
         super("SocketServer");
         this.parent = parent;
-        server=s;
+        this.server = s;
+        this.selectedEncoding = selectedEncoding;
         setStop(false);
         setDisonnected(false);
         start();
     }
-    
-    public static synchronized SocketServer handle(SocketTestServer parent,
-            ServerSocket s) {
-        if(socketServer==null)
-            socketServer=new SocketServer(parent, s);
+
+    public static synchronized SocketServer handle(SocketTestServer parent, ServerSocket s, Encoding selectedEncoding) {
+        if (socketServer == null)
+            socketServer = new SocketServer(parent, s, selectedEncoding);
         else {
-            if(socketServer.server!=null) {
-                try	{
+            if (socketServer.server != null) {
+                try {
                     socketServer.setDisonnected(true);
                     socketServer.setStop(true);
-                    if(socketServer.socket!=null)
+                    if (socketServer.socket != null)
                         socketServer.socket.close();
-                    if(socketServer.server!=null)
+                    if (socketServer.server != null)
                         socketServer.server.close();
-                } catch (Exception e)	{
+                } catch (Exception e) {
                     parent.error(e.getMessage());
                 }
             }
             socketServer.server = null;
             socketServer.socket = null;
-            socketServer=new SocketServer(parent,s);
+            socketServer = new SocketServer(parent, s, selectedEncoding);
         }
         return socketServer;
     }
-    
+
     @Override
     public void run() {
         while(!stop) {
@@ -104,11 +107,12 @@ public class SocketServer extends Thread {
     
     private void startServer() {
         parent.setClientSocket(socket);
-        InputStream is = null;
         parent.append("> New Client: "+socket.getInetAddress().getHostAddress());
+        
         try {
-            is = socket.getInputStream();
-            in = new BufferedInputStream(is);
+            InputStream is = socket.getInputStream();
+            this.reader = new BufferedReader(new InputStreamReader(is, selectedEncoding.getCharset()));
+            
         } catch(IOException e) {
             parent.append("> Could not open input stream on Client "+e.getMessage());
             setDisonnected(true);
@@ -116,9 +120,20 @@ public class SocketServer extends Thread {
         }
         
         while (true) {
-            String rec = null;
             try {
-                rec = readInputStream(in);
+                String rec = read();
+                if (rec == null) {
+                    if (!reader.ready()) {
+                        setDisonnected(true);
+                        parent.append("> Client closed connection.");
+                        break;
+                    } else {
+                        sleep(200);
+                        continue;
+                    }
+                }
+                parent.append("R: " + rec);
+                
             } catch (Exception e) {
                 setDisonnected(true);
                 if (!disonnected) {
@@ -128,30 +143,23 @@ public class SocketServer extends Thread {
                     parent.append("> Server closed Client connection.");
                 break;
             }
-
-            if (rec != null) {
-                parent.append("R: " + rec);
-            } else {
-                setDisonnected(true);
-                parent.append("> Client closed connection.");
-                break;
-            }
         }
     }
 
-    private static String readInputStream(BufferedInputStream _in) throws IOException {
-        String data = "";
-        int s = _in.read();
-        if (s == -1)
-            return null;
-        data += "" + (char) s;
-        int len = _in.available();
-        System.out.println("Len got : " + len);
-        if (len > 0) {
-            byte[] byteData = new byte[len];
-            _in.read(byteData);
-            data += new String(byteData);
-        }
-        return data;
+    public String read() throws IOException {
+        StringBuilder result = new StringBuilder();
+        
+        do {
+            int charVal = reader.read();
+            if (charVal == -1) {
+                return null;
+            }
+            
+            char z = (char) charVal;
+            result.append(z);
+        } while (reader.ready());
+
+        System.out.println("Received: " + result);
+        return result.toString();
     }
 }

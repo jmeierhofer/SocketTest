@@ -25,6 +25,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -69,7 +70,7 @@ public class SocketTestClient extends JPanel implements NetService {
             JLabel.CENTER);
     private JTextField ipField = new JTextField("127.0.0.1", 20);
     private JTextField portField = new JTextField("21", 10);
-    private JButton portButton = new JButton("Port");
+    private JComboBox<Encoding> encodingBox = new JComboBox<>(Encoding.values());
     private JButton connectButton = new JButton("Connect");
 
     private JLabel convLabel = new JLabel("Conversation with host");
@@ -150,17 +151,8 @@ public class SocketTestClient extends JPanel implements NetService {
         gbc.gridx = 2;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
-        portButton.setMnemonic('P');
-        portButton.setToolTipText("View Standard Ports");
-        ActionListener portButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PortDialog dia = new PortDialog(parent, PortDialog.TCP);
-                dia.setVisible(true);
-            }
-        };
-        portButton.addActionListener(portButtonListener);
-        toPanel.add(portButton, gbc);
+        encodingBox.setToolTipText("Define charset to use for raw byte conversion");
+        toPanel.add(encodingBox, gbc);
 
         gbc.weightx = 0.0;
         gbc.gridy = 1;
@@ -171,7 +163,6 @@ public class SocketTestClient extends JPanel implements NetService {
         connectButton.setToolTipText("Start Connection");
         connectButton.addActionListener(connectListener);
         toPanel.add(connectButton, gbc);
-
 
         gbc.weightx = 0.0;
         gbc.gridy = 1;
@@ -343,8 +334,10 @@ public class SocketTestClient extends JPanel implements NetService {
     private void connect() {
         if (socket != null) {
             disconnect();
+            encodingBox.setEnabled(true);
             return;
         }
+
         String ip = ipField.getText();
         String port = portField.getText();
         if (ip == null || ip.equals("")) {
@@ -387,10 +380,10 @@ public class SocketTestClient extends JPanel implements NetService {
         }
         try {
             if (isSecure == false) {
-                System.out.println("Connectig in normal mode : " + ip + ":" + portNo);
+                System.out.println("Connecting in normal mode : " + ip + ":" + portNo);
                 socket = new Socket(ip, portNo);
             } else {
-                System.out.println("Connectig in secure mode : " + ip + ":" + portNo);
+                System.out.println("Connecting in secure mode : " + ip + ":" + portNo);
                 //SocketFactory factory = SSLSocketFactory.getDefault();
 
                 TrustManager[] tm = new TrustManager[]{new MyTrustManager(SocketTestClient.this)};
@@ -419,8 +412,12 @@ public class SocketTestClient extends JPanel implements NetService {
                 " [" + socket.getInetAddress().getHostAddress() + "] ");
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         messagesField.setText("");
-        socketClient = SocketClient.handle(this, socket);
+        
+        Encoding selectedEncoding = (Encoding) encodingBox.getSelectedItem();
+        socketClient = SocketClient.handle(this, socket, selectedEncoding);
+        
         sendField.requestFocus();
+        encodingBox.setEnabled(false);
     }
 
     public synchronized void disconnect() {
@@ -440,6 +437,7 @@ public class SocketTestClient extends JPanel implements NetService {
         connectButton.setToolTipText("Start Connection");
         sendButton.setEnabled(false);
         sendField.setEditable(false);
+        encodingBox.setEnabled(true);
     }
 
     public void error(String error) {
@@ -470,14 +468,19 @@ public class SocketTestClient extends JPanel implements NetService {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             if (out == null) {
-                out = new PrintWriter(new BufferedWriter(
-                        new OutputStreamWriter(socket.getOutputStream())), true);
+                Encoding selectedEncoding = (Encoding) encodingBox.getSelectedItem();
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream(),
+                        selectedEncoding.getCharset());
+                BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
+                out = new PrintWriter(bufferedWriter, true);
             }
+            
             append("S: " + s);
             out.print(s + NEW_LINE);
             out.flush();
             sendField.setText("");
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            
         } catch (Exception e) {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             JOptionPane.showMessageDialog(SocketTestClient.this,

@@ -17,6 +17,7 @@ import java.net.MulticastSocket;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -61,7 +62,7 @@ public class SocketTestUdp extends JPanel implements NetService {
 
     private JTextField ipField1 = new JTextField("0.0.0.0", 20);
     private JTextField portField1 = new JTextField("21", 5);
-    private JButton portButton1 = new JButton("Port");
+    private JComboBox<Encoding> encodingBox1 = new JComboBox<>(Encoding.values());
     private JButton connectButton = new JButton("Start Listening");
 
     private Border convBorder = BorderFactory.createTitledBorder(new EtchedBorder(), "Conversation");
@@ -71,7 +72,7 @@ public class SocketTestUdp extends JPanel implements NetService {
     private JLabel portLabel2 = new JLabel("Port");
     private JTextField ipField2 = new JTextField("127.0.0.1");
     private JTextField portField2 = new JTextField("21", 5);
-    private JButton portButton2 = new JButton("Port");
+    private JComboBox<Encoding> encodingBox2 = new JComboBox<>(Encoding.values());
     private JLabel sendLabel = new JLabel("Message");
     private JTextField sendField = new JTextField();
     private JButton sendButton = new JButton("Send");
@@ -146,17 +147,8 @@ public class SocketTestUdp extends JPanel implements NetService {
         gbc.gridx = 2;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
-        portButton1.setMnemonic('P');
-        portButton1.setToolTipText("View Standard Ports");
-        ActionListener portButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PortDialog dia = new PortDialog(parent, PortDialog.UDP);
-                dia.setVisible(true);
-            }
-        };
-        portButton1.addActionListener(portButtonListener);
-        serverPanel.add(portButton1, gbc);
+        encodingBox1.setToolTipText("Define charset to use for raw byte conversion");
+        serverPanel.add(encodingBox1, gbc);
 
         gbc.weightx = 0.0;
         gbc.gridy = 1;
@@ -235,10 +227,8 @@ public class SocketTestUdp extends JPanel implements NetService {
         gbc.gridx = 4;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        portButton2.setMnemonic('P');
-        portButton2.setToolTipText("View Standard Ports");
-        portButton2.addActionListener(portButtonListener);
-        clientPanel.add(portButton2, gbc);
+        encodingBox2.setToolTipText("Define charset to use for raw byte conversion");
+        clientPanel.add(encodingBox2, gbc);
 
         gbc.weightx = 0.0;
         gbc.gridy = 1;
@@ -355,8 +345,11 @@ public class SocketTestUdp extends JPanel implements NetService {
     private void listen() {
         if (server != null) {
             stop();
+            encodingBox1.setEnabled(true);
             return;
         }
+
+        encodingBox1.setEnabled(false);
         String ip = ipField1.getText();
         String port = portField1.getText();
         if (ip == null || ip.equals("")) {
@@ -442,7 +435,9 @@ public class SocketTestUdp extends JPanel implements NetService {
             messagesField.setText("> Server Started on Port : " + portNo + NEW_LINE);
         }
         append("> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        udpServer = UdpServer.handle(this, server);
+        
+        Encoding selectedEncoding = (Encoding) encodingBox1.getSelectedItem();
+        udpServer = UdpServer.handle(this, server, selectedEncoding);
     }
 
     public synchronized void stop() {
@@ -508,11 +503,12 @@ public class SocketTestUdp extends JPanel implements NetService {
             InetAddress toAddr = null;
             toAddr = InetAddress.getByName(ip);
 
+            Encoding selectedEncoding = (Encoding) encodingBox2.getSelectedItem();
             if (client == null) {
                 client = new DatagramSocket();
-                UdpServer.handleClient(this, client); //listen for its response
+                UdpServer.handleClient(this, client, selectedEncoding); //listen for its response
             }
-            buffer = s.getBytes();
+            buffer = s.getBytes(selectedEncoding.getCharset());
             pack = new DatagramPacket(buffer, buffer.length, toAddr, portNo);
             append("S[" + toAddr.getHostAddress() + ":" + portNo + "]: " + s);
             client.send(pack);
