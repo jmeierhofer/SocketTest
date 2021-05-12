@@ -42,10 +42,10 @@ public class SocketTestUdp extends JPanel implements NetService {
     
     private static final long serialVersionUID = 1L;
     
-    private final String NEW_LINE = "\r\n";
+    private static final String NEW_LINE = System.lineSeparator();
+    
     private ClassLoader cl = getClass().getClassLoader();
-    public ImageIcon logo = new ImageIcon(
-            cl.getResource("icons/logo.gif"));
+    private ImageIcon logo = new ImageIcon(cl.getResource("icons/logo.gif"));
 
     private JPanel northPanel;
     private JPanel serverPanel;
@@ -541,7 +541,6 @@ public class SocketTestUdp extends JPanel implements NetService {
         messagesField.setCaretPosition(messagesField.getText().length());
     }
 
-
     @Override
     public void setUpConfiguration(String ip, String port) {
         ipField1.setText(ip);
@@ -549,5 +548,4 @@ public class SocketTestUdp extends JPanel implements NetService {
         ipField2.setText(ip);
         portField2.setText(port);
     }
-
 }

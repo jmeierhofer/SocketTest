@@ -168,9 +168,9 @@ public class About extends JPanel {
         try {
             String cont = Util.readFile("readme.txt",About.this);
             readme.setText(cont);
-        } catch (IOException e){
-            System.err.println("Error reading readme.txt "+e);
-            readme.append("\r\nFailed : "+e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Error reading readme.txt " + e);
+            readme.append(System.lineSeparator() + "Failed : " + e.getMessage());
         }
         readme.setEditable(false);
         readme.setLineWrap(true);

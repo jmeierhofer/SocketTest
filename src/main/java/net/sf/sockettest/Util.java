@@ -1,8 +1,16 @@
 package net.sf.sockettest;
 
-import java.net.*;
-import java.io.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Window;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  *
@@ -42,7 +50,7 @@ public class Util {
         String s;
         while((s = in.readLine()) != null) {
             sb.append(s);
-            sb.append("\n");
+            sb.append(System.lineSeparator());
         }
         in.close();
         return sb.toString();

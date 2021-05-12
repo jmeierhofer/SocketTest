@@ -51,10 +51,10 @@ public class SocketTestClient extends JPanel implements NetService {
     
     private static final long serialVersionUID = 1L;
 
-    private final String NEW_LINE = "\r\n";
+    private static final String NEW_LINE = System.lineSeparator();
+    
     private ClassLoader cl = getClass().getClassLoader();
-    public ImageIcon logo = new ImageIcon(
-            cl.getResource("icons/logo.gif"));
+    private ImageIcon logo = new ImageIcon(cl.getResource("icons/logo.gif"));
 
     private JPanel topPanel;
     private JPanel toPanel;
@@ -459,7 +459,7 @@ public class SocketTestClient extends JPanel implements NetService {
         messagesField.setCaretPosition(messagesField.getText().length());
     }
 
-    public void appendnoNewLine(String msg) {
+    public void appendNoNewLine(String msg) {
         messagesField.append(msg);
         messagesField.setCaretPosition(messagesField.getText().length());
     }
@@ -476,7 +476,7 @@ public class SocketTestClient extends JPanel implements NetService {
             }
             
             append("S: " + s);
-            out.print(s + NEW_LINE);
+            out.print(s);
             out.flush();
             sendField.setText("");
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
