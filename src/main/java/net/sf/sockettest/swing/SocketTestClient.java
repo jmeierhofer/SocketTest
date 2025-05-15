@@ -48,11 +48,11 @@ import net.sf.sockettest.Version;
  * @author Akshathkumar Shetty
  */
 public class SocketTestClient extends JPanel implements NetService {
-    
+
     private static final long serialVersionUID = 1L;
 
     private static final String NEW_LINE = System.lineSeparator();
-    
+
     private ClassLoader cl = getClass().getClassLoader();
     private ImageIcon logo = new ImageIcon(cl.getResource("icons/logo.gif"));
 
@@ -78,7 +78,7 @@ public class SocketTestClient extends JPanel implements NetService {
     private JTextArea messagesField = new JTextArea();
 
     private JLabel sendLabel = new JLabel("Message");
-    private JTextField sendField = new JTextField();
+    private JTextArea sendArea = new JTextArea();
 
     private JButton sendButton = new JButton("Send");
     private JButton saveButton = new JButton("Save");
@@ -211,8 +211,8 @@ public class SocketTestClient extends JPanel implements NetService {
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        sendField.setEditable(false);
-        sendPanel.add(sendField, gbc);
+        sendArea.setEditable(false);
+        sendPanel.add(sendArea, gbc);
         gbc.gridx = 2;
         gbc.weightx = 0.0;
         gbc.fill = GridBagConstraints.NONE;
@@ -221,21 +221,18 @@ public class SocketTestClient extends JPanel implements NetService {
         ActionListener sendListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String msg = sendField.getText();
+                String msg = sendArea.getText();
                 if (!msg.equals(""))
                     sendMessage(msg);
                 else {
-                    int value = JOptionPane.showConfirmDialog(
-                            SocketTestClient.this, "Send Blank Line ?",
-                            "Send Data To Server",
-                            JOptionPane.YES_NO_OPTION);
+                    int value = JOptionPane.showConfirmDialog(SocketTestClient.this, "Send Blank Line ?",
+                            "Send Data To Server", JOptionPane.YES_NO_OPTION);
                     if (value == JOptionPane.YES_OPTION)
                         sendMessage(msg);
                 }
             }
         };
         sendButton.addActionListener(sendListener);
-        sendField.addActionListener(sendListener);
         sendPanel.add(sendButton, gbc);
         sendPanel.setBorder(
                 new CompoundBorder(
@@ -275,12 +272,11 @@ public class SocketTestClient extends JPanel implements NetService {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     fileName = chooser.getSelectedFile().getAbsolutePath();
                     try {
-                        Util.writeFile(fileName, text);
+                        Encoding selectedEncoding = (Encoding) encodingBox.getSelectedItem();
+                        Util.writeFile(fileName, text, selectedEncoding.getCharset());
                     } catch (Exception ioe) {
-                        JOptionPane.showMessageDialog(SocketTestClient.this,
-                                "" + ioe.getMessage(),
-                                "Error saving to file..",
-                                JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(SocketTestClient.this, "" + ioe.getMessage(),
+                                "Error saving to file..", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -314,7 +310,7 @@ public class SocketTestClient extends JPanel implements NetService {
         cp.add(topPanel, BorderLayout.NORTH);
         cp.add(centerPanel, BorderLayout.CENTER);
     }
-    
+
         /*
         public static void main(String args[]) {
                 SocketTestClient client=new SocketTestClient();
@@ -401,7 +397,7 @@ public class SocketTestClient extends JPanel implements NetService {
             connectButton.setMnemonic('D');
             connectButton.setToolTipText("Stop Connection");
             sendButton.setEnabled(true);
-            sendField.setEditable(true);
+            sendArea.setEditable(true);
         } catch (Exception e) {
             e.printStackTrace();
             error(e.getMessage(), "Opening connection");
@@ -412,11 +408,11 @@ public class SocketTestClient extends JPanel implements NetService {
                 " [" + socket.getInetAddress().getHostAddress() + "] ");
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         messagesField.setText("");
-        
+
         Encoding selectedEncoding = (Encoding) encodingBox.getSelectedItem();
         socketClient = SocketClient.handle(this, socket, selectedEncoding);
-        
-        sendField.requestFocus();
+
+        sendArea.requestFocus();
         encodingBox.setEnabled(false);
     }
 
@@ -436,7 +432,7 @@ public class SocketTestClient extends JPanel implements NetService {
         connectButton.setMnemonic('C');
         connectButton.setToolTipText("Start Connection");
         sendButton.setEnabled(false);
-        sendField.setEditable(false);
+        sendArea.setEditable(false);
         encodingBox.setEnabled(true);
     }
 
@@ -464,7 +460,7 @@ public class SocketTestClient extends JPanel implements NetService {
         messagesField.setCaretPosition(messagesField.getText().length());
     }
 
-    public void sendMessage(String s) {
+    public void sendMessage(String msg) {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             if (out == null) {
@@ -474,17 +470,16 @@ public class SocketTestClient extends JPanel implements NetService {
                 BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
                 out = new PrintWriter(bufferedWriter, true);
             }
-            
-            append("S: " + s);
-            out.print(s);
+
+            append("S: " + msg);
+            out.print(msg);
             out.flush();
-            sendField.setText("");
+            sendArea.setText("");
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            
+
         } catch (Exception e) {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            JOptionPane.showMessageDialog(SocketTestClient.this,
-                    e.getMessage(), "Error Sending Message",
+            JOptionPane.showMessageDialog(SocketTestClient.this, e.getMessage(), "Error Sending Message",
                     JOptionPane.ERROR_MESSAGE);
             disconnect();
         }

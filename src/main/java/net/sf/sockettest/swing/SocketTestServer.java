@@ -42,22 +42,22 @@ import net.sf.sockettest.Version;
  * @author Akshathkumar Shetty
  */
 public class SocketTestServer extends JPanel implements NetService {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     private static final String NEW_LINE = System.lineSeparator();
-    
+
     private ClassLoader cl = getClass().getClassLoader();
     private ImageIcon logo = new ImageIcon(cl.getResource("icons/logo.gif"));
 
     private JPanel topPanel;
     private JPanel toPanel;
-    
+
     private JPanel centerPanel;
     private JPanel textPanel;
     private JPanel buttonPanel;
     private JPanel sendPanel;
-    
+
     private JLabel ipLabel = new JLabel("IP Address");
     private JLabel portLabel = new JLabel("Port");
     private JLabel logoLabel = new JLabel(Version.VERSION_LONG, logo,
@@ -66,33 +66,33 @@ public class SocketTestServer extends JPanel implements NetService {
     private JTextField portField = new JTextField("21",10);
     private JComboBox<Encoding> encodingBox = new JComboBox<>(Encoding.values());
     private JButton connectButton = new JButton("Start Listening");
-    
+
     private JLabel convLabel = new JLabel("Conversation with Client");
     private Border connectedBorder = BorderFactory.createTitledBorder(new EtchedBorder(),"Connected Client : < NONE >");
     private JTextArea messagesField = new JTextArea();
-    
+
     private JLabel sendLabel = new JLabel("Message");
-    private JTextField sendField = new JTextField();
-    
+    private JTextArea sendArea = new JTextArea();
+
     private JButton sendButton = new JButton("Send");
     private JButton disconnectButton = new JButton("Disconnect");
     private JButton saveButton = new JButton("Save");
     private JButton clearButton = new JButton("Clear");
-    
+
     private GridBagConstraints gbc = new GridBagConstraints();
-    
+
     private Socket socket;
     private ServerSocket server;
     private SocketServer socketServer;
     private PrintWriter out;
-    
+
     protected final JFrame parent;
-    
+
     public SocketTestServer(final JFrame parent) {
         //Container cp = getContentPane();
         this.parent = parent;
         Container cp = this;
-        
+
         topPanel = new JPanel();
         toPanel = new JPanel();
         toPanel.setLayout(new GridBagLayout());
@@ -106,7 +106,7 @@ public class SocketTestServer extends JPanel implements NetService {
         gbc.anchor = GridBagConstraints.EAST;
         gbc.fill = GridBagConstraints.NONE;
         toPanel.add(ipLabel, gbc);
-        
+
         gbc.weightx = 1.0; //streach
         gbc.gridx = 1;
         gbc.gridwidth = 3;
@@ -119,14 +119,14 @@ public class SocketTestServer extends JPanel implements NetService {
         };
         ipField.addActionListener(ipListener);
         toPanel.add(ipField, gbc);
-        
+
         gbc.weightx = 0.0;
         gbc.gridy = 1;
         gbc.gridx = 0;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
         toPanel.add(portLabel, gbc);
-        
+
         gbc.weightx = 1.0;
         gbc.gridy = 1;
         gbc.gridx = 1;
@@ -140,7 +140,7 @@ public class SocketTestServer extends JPanel implements NetService {
         };
         portField.addActionListener(connectListener);
         toPanel.add(portField, gbc);
-        
+
         gbc.weightx = 0.0;
         gbc.gridy = 1;
         gbc.gridx = 2;
@@ -148,7 +148,7 @@ public class SocketTestServer extends JPanel implements NetService {
         gbc.fill = GridBagConstraints.NONE;
         encodingBox.setToolTipText("Define charset to use for raw byte conversion");
         toPanel.add(encodingBox, gbc);
-        
+
         gbc.weightx = 0.0;
         gbc.gridy = 1;
         gbc.gridx = 3;
@@ -158,7 +158,7 @@ public class SocketTestServer extends JPanel implements NetService {
         connectButton.setToolTipText("Start Listening");
         connectButton.addActionListener(connectListener);
         toPanel.add(connectButton, gbc);
-        
+
         toPanel.setBorder(BorderFactory.createTitledBorder(new EtchedBorder(),"Listen On"));
         topPanel.setLayout(new BorderLayout(10,0));
         topPanel.add(toPanel);
@@ -166,8 +166,8 @@ public class SocketTestServer extends JPanel implements NetService {
         logoLabel.setHorizontalTextPosition(JLabel.CENTER);
         topPanel.add(logoLabel,BorderLayout.EAST);
         topPanel.setBorder(BorderFactory.createEmptyBorder(10,10,5,10));
-        
-        
+
+
         textPanel = new JPanel();
         textPanel.setLayout(new BorderLayout(0,5));
         textPanel.add(convLabel,BorderLayout.NORTH);
@@ -175,7 +175,7 @@ public class SocketTestServer extends JPanel implements NetService {
         JScrollPane jsp = new JScrollPane(messagesField);
         textPanel.add(jsp);
         textPanel.setBorder(BorderFactory.createEmptyBorder(3,3,0,3));
-        
+
         sendPanel = new JPanel();
         sendPanel.setLayout(new GridBagLayout());
         gbc.weighty = 0.0;
@@ -190,8 +190,8 @@ public class SocketTestServer extends JPanel implements NetService {
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        sendField.setEditable(false);
-        sendPanel.add(sendField, gbc);
+        sendArea.setEditable(false);
+        sendPanel.add(sendArea, gbc);
         gbc.gridx = 2;
         gbc.weightx = 0.0;
         gbc.fill = GridBagConstraints.NONE;
@@ -200,21 +200,18 @@ public class SocketTestServer extends JPanel implements NetService {
         ActionListener sendListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String msg = sendField.getText();
-                if(!msg.equals(""))
+                String msg = sendArea.getText();
+                if (!msg.equals(""))
                     sendMessage(msg);
                 else {
-                    int value = JOptionPane.showConfirmDialog(
-                            SocketTestServer.this,  "Send Blank Line ?",
-                            "Send Data To Client",
-                            JOptionPane.YES_NO_OPTION);
+                    int value = JOptionPane.showConfirmDialog(SocketTestServer.this, "Send Blank Line ?",
+                            "Send Data To Client", JOptionPane.YES_NO_OPTION);
                     if (value == JOptionPane.YES_OPTION)
                         sendMessage(msg);
                 }
             }
         };
         sendButton.addActionListener(sendListener);
-        sendField.addActionListener(sendListener);
         sendPanel.add(sendButton, gbc);
         ActionListener disconnectListener = new ActionListener() {
             @Override
@@ -226,12 +223,12 @@ public class SocketTestServer extends JPanel implements NetService {
         disconnectButton.addActionListener(disconnectListener);
         disconnectButton.setEnabled(false);
         sendPanel.add(disconnectButton, gbc);
-        
+
         sendPanel.setBorder(
                 new CompoundBorder(
                 BorderFactory.createEmptyBorder(0,0,0,3),
                 BorderFactory.createTitledBorder("Send")));
-        
+
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridBagLayout());
         gbc.weighty = 0.0;
@@ -262,15 +259,14 @@ public class SocketTestServer extends JPanel implements NetService {
                 JFileChooser chooser = new JFileChooser();
                 chooser.setCurrentDirectory(new File("."));
                 int returnVal = chooser.showSaveDialog(SocketTestServer.this);
-                if(returnVal == JFileChooser.APPROVE_OPTION) {
-                    fileName=chooser.getSelectedFile().getAbsolutePath();
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    fileName = chooser.getSelectedFile().getAbsolutePath();
                     try {
-                        Util.writeFile(fileName,text);
+                        Encoding selectedEncoding = (Encoding) encodingBox.getSelectedItem();
+                        Util.writeFile(fileName, text, selectedEncoding.getCharset());
                     } catch (Exception ioe) {
-                        JOptionPane.showMessageDialog(SocketTestServer.this,
-                                ""+ioe.getMessage(),
-                                "Error saving to file..",
-                                JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(SocketTestServer.this, "" + ioe.getMessage(),
+                                "Error saving to file..", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -289,34 +285,22 @@ public class SocketTestServer extends JPanel implements NetService {
         clearButton.addActionListener(clearListener);
         buttonPanel.add(clearButton, gbc);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(3,0,0,3));
-        
+
         centerPanel = new JPanel();
         centerPanel.setLayout(new BorderLayout(0,10));
         centerPanel.add(buttonPanel,BorderLayout.SOUTH);
         centerPanel.add(textPanel,BorderLayout.CENTER);
-        
+
         CompoundBorder cb=new CompoundBorder(
                 BorderFactory.createEmptyBorder(5,10,10,10),
                 connectedBorder);
         centerPanel.setBorder(cb);
-        
+
         cp.setLayout(new BorderLayout(10,0));
         cp.add(topPanel,BorderLayout.NORTH);
         cp.add(centerPanel,BorderLayout.CENTER);
     }
-    
-        /*
-        public static void main(String args[]) {
-                SocketTestServer stServer=new SocketTestServer();
-                stServer.setTitle("SocketTest Server");
-                stServer.setSize(500,400);
-                Util.centerWindow(stServer);
-                stServer.setDefaultCloseOperation(EXIT_ON_CLOSE);
-                stServer.setIconImage(stServer.logo.getImage());
-                stServer.setVisible(true);
-        }
-         */
-    
+
     /////////////////////
     //action & helper methods
     /////////////////////
@@ -326,7 +310,7 @@ public class SocketTestServer extends JPanel implements NetService {
             encodingBox.setEnabled(true);
             return;
         }
-        
+
         String ip=ipField.getText();
         String port=portField.getText();
         if(ip==null || ip.equals("")) {
@@ -374,10 +358,10 @@ public class SocketTestServer extends JPanel implements NetService {
             else
                 bindAddr = null;
             server = new ServerSocket(portNo,1,bindAddr);
-            
+
             ipField.setEditable(false);
             portField.setEditable(false);
-            
+
             connectButton.setText("Stop Listening");
             connectButton.setMnemonic('S');
             connectButton.setToolTipText("Stop Listening");
@@ -396,7 +380,7 @@ public class SocketTestServer extends JPanel implements NetService {
 
         Encoding selectedEncoding = (Encoding) encodingBox.getSelectedItem();
         socketServer = SocketServer.handle(this, server, selectedEncoding);
-        
+
         encodingBox.setEnabled(false);
     }
 
@@ -405,7 +389,7 @@ public class SocketTestServer extends JPanel implements NetService {
             socketServer.setDisonnected(true);
         } catch (Exception e) {}
     }
-    
+
     public synchronized void stop() {
         try {
             disconnect(); //close any client
@@ -420,40 +404,40 @@ public class SocketTestServer extends JPanel implements NetService {
         append("> Server stopped");
         append("> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
-    
+
     public synchronized void setClientSocket(Socket s) {
-        
+
         if(s==null) {
             out=null;
             socket = null;
             changeBorder(null);
             sendButton.setEnabled(false);
-            sendField.setEditable(false);
+            sendArea.setEditable(false);
             disconnectButton.setEnabled(false);
         } else {
             socket = s;
             changeBorder(" "+socket.getInetAddress().getHostName()+
                     " ["+socket.getInetAddress().getHostAddress()+"] ");
             sendButton.setEnabled(true);
-            sendField.setEditable(true);
+            sendArea.setEditable(true);
             disconnectButton.setEnabled(true);
         }
     }
-    
+
     public void error(String error) {
         if(error==null || error.equals(""))
             return;
         JOptionPane.showMessageDialog(SocketTestServer.this,
                 error, "Error", JOptionPane.ERROR_MESSAGE);
     }
-    
+
     public void error(String error, String heading) {
         if(error==null || error.equals(""))
             return;
         JOptionPane.showMessageDialog(SocketTestServer.this,
                 error, heading, JOptionPane.ERROR_MESSAGE);
     }
-    
+
     public void append(String msg) {
         messagesField.append(msg + NEW_LINE);
         messagesField.setCaretPosition(messagesField.getText().length());
@@ -463,10 +447,10 @@ public class SocketTestServer extends JPanel implements NetService {
         messagesField.append(msg);
         messagesField.setCaretPosition(messagesField.getText().length());
     }
-    
+
     public void sendMessage(String s) {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        try	{
+        try {
             if (out == null) {
                 Encoding selectedEncoding = (Encoding) encodingBox.getSelectedItem();
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream(),
@@ -474,22 +458,21 @@ public class SocketTestServer extends JPanel implements NetService {
                 BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
                 out = new PrintWriter(bufferedWriter, true);
             }
-            
+
             append("S: " + s);
             out.print(s);
             out.flush();
-            sendField.setText("");
+            sendArea.setText("");
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
         } catch (Exception e) {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            JOptionPane.showMessageDialog(SocketTestServer.this,
-                    e.getMessage(),"Error Sending Message",
+            JOptionPane.showMessageDialog(SocketTestServer.this, e.getMessage(), "Error Sending Message",
                     JOptionPane.ERROR_MESSAGE);
             disconnect();
         }
     }
-    
+
     private void changeBorder(String ip) {
         if(ip==null || ip.equals(""))
             connectedBorder = BorderFactory.createTitledBorder(

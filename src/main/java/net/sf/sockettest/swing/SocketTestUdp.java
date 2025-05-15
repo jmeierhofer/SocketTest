@@ -39,11 +39,11 @@ import net.sf.sockettest.Version;
  * @author Akshathkumar Shetty
  */
 public class SocketTestUdp extends JPanel implements NetService {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     private static final String NEW_LINE = System.lineSeparator();
-    
+
     private ClassLoader cl = getClass().getClassLoader();
     private ImageIcon logo = new ImageIcon(cl.getResource("icons/logo.gif"));
 
@@ -307,14 +307,13 @@ public class SocketTestUdp extends JPanel implements NetService {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     fileName = chooser.getSelectedFile().getAbsolutePath();
                     try {
-                        Util.writeFile(fileName, text);
+                        Encoding selectedEncoding = (Encoding) encodingBox1.getSelectedItem();
+                        Util.writeFile(fileName, text, selectedEncoding.getCharset());
                     } catch (Exception ioe) {
-                        JOptionPane.showMessageDialog(SocketTestUdp.this,
-                                "" + ioe.getMessage(),
-                                "Error saving to file..",
-                                JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(SocketTestUdp.this, "" + ioe.getMessage(),
+                                "Error saving to file..", JOptionPane.ERROR_MESSAGE);
                     }
-                }//end of if
+                }
             }
         };
         saveButton.addActionListener(saveListener);
@@ -435,7 +434,7 @@ public class SocketTestUdp extends JPanel implements NetService {
             messagesField.setText("> Server Started on Port : " + portNo + NEW_LINE);
         }
         append("> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        
+
         Encoding selectedEncoding = (Encoding) encodingBox1.getSelectedItem();
         udpServer = UdpServer.handle(this, server, selectedEncoding);
     }
